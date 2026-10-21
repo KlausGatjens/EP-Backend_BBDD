@@ -23,6 +23,7 @@ necesita integridad y consistencia (ACID).
 
 ```text
 EP-Backend_BBDD/
+├── inicializar.sql                     # Ejecuta los cinco scripts en orden
 ├── DDL/
 │   ├── 01_creacion_tablas.sql            # Base MythosReservasDB + tablas con PK, FK, UNIQUE, CHECK y DEFAULT
 │   ├── 02_creacion_indices.sql           # Índices de búsqueda
@@ -52,28 +53,24 @@ Abrir cada archivo y ejecutarlo completo (**F5**) **en este orden**:
 
 Para reiniciar la base desde cero, volver a ejecutar del 1 al 5.
 
-### Opción 2: desde la API (`npm run db:setup`)
+### Opción 2: ejecutar todo desde este repositorio
 
-Clonar este repositorio **en la misma carpeta** que EP-Backend:
+El archivo `inicializar.sql` llama a los cinco scripts en orden. No requiere Node.js ni ejecutar la API.
 
-```text
-carpeta/
-├── EP-Backend/
-└── EP-Backend_BBDD/
+Desde una terminal ubicada en la carpeta de este repositorio, con `sqlcmd` instalado:
+
+```powershell
+sqlcmd -S localhost -U sa -C -b -i inicializar.sql
 ```
 
-En EP-Backend, `npm run db:setup` ejecuta estos scripts en orden (del 01 al 05) con las credenciales del `.env`.
-Si este repositorio está en otra ubicación, indicar su ruta en la variable `BBDD_REPO` del `.env` de EP-Backend.
+Se solicitará la contraseña de SQL Server. Cambia el servidor o el usuario si corresponde.
 
-### Opción 3: consola (sqlcmd)
+También puedes abrir `inicializar.sql` en SSMS y activar **Consulta > Modo SQLCMD**.
+En ese caso, cambia las rutas de las líneas `:r` por rutas absolutas a los archivos de tu equipo,
+porque las rutas relativas dependen del directorio de trabajo de SSMS. Después ejecuta con F5.
+La opción 1 permite ejecutar los archivos por separado sin usar el modo SQLCMD.
 
-```bash
-sqlcmd -S localhost -U sa -P <clave> -C -i DDL/01_creacion_tablas.sql
-sqlcmd -S localhost -U sa -P <clave> -C -i DDL/02_creacion_indices.sql
-sqlcmd -S localhost -U sa -P <clave> -C -i DDL/03_creacion_vista.sql
-sqlcmd -S localhost -U sa -P <clave> -C -i DDL/04_procedimientos_almacenados.sql
-sqlcmd -S localhost -U sa -P <clave> -C -i DML/05_carga_inicial.sql
-```
+**Atención:** la inicialización elimina y recrea las tablas y borra sus datos anteriores.
 
 ## Diagrama de la base de datos
 
